@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Restore .NET packages
+        run: dotnet restore
+
+      - name: Install React dependencies
+        working-directory: ./ClientApp
+        run: npm install
+
+      - name: Build .NET backend
+        run: dotnet build --no-restore
+
+      - name: Build React frontend
+        working-directory: ./ClientApp
+        run: npm run build
